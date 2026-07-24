@@ -38,26 +38,36 @@ export class CoursesService {
   findByInstructor(instructorId: string) {
     return this.repo.find({
       where: { instructorId },
-      relations: ['enrollments'],
+      relations: ['enrollments', 'enrollments.user', 'lessons'],
       order: { createdAt: 'DESC' },
     });
   }
 
-  create(dto: CreateCourseDto, instructorId: string) {
-    const course = this.repo.create({ ...dto, instructorId });
+  // Admin: every course on the platform, published or draft.
+  findAllForAdmin() {
+    return this.repo.find({
+      relations: ['instructor', 'enrollments'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  create(dto: CreateCourseDto & { instructorId?: string }, requesterId: string, requesterRole: string) {
+    const instructorId = requesterRole === 'admin' && dto.instructorId ? dto.instructorId : requesterId;
+    const { instructorId: _ignored, ...rest } = dto as any;
+    const course = this.repo.create({ ...rest, instructorId });
     return this.repo.save(course);
   }
 
-  async update(id: string, data: Partial<Course>, userId: string) {
+  async update(id: string, data: Partial<Course>, userId: string, role: string) {
     const course = await this.findOne(id);
-    if (course.instructorId !== userId) throw new ForbiddenException();
+    if (course.instructorId !== userId && role !== 'admin') throw new ForbiddenException();
     await this.repo.update(id, data);
     return this.findOne(id);
   }
 
-  async remove(id: string, userId: string) {
+  async remove(id: string, userId: string, role: string) {
     const course = await this.findOne(id);
-    if (course.instructorId !== userId) throw new ForbiddenException();
+    if (course.instructorId !== userId && role !== 'admin') throw new ForbiddenException();
     return this.repo.delete(id);
   }
 }

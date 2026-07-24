@@ -73,7 +73,25 @@ npm run start:dev
 ```
 
 Dans pgAdmin → `futurelearn` → `Schemas` → `public` → `Tables`,
-tu verras apparaître : `users`, `courses`, `lessons`, `enrollments`, `progress`, `certificates`.
+tu verras apparaître : `users`, `courses`, `lessons`, `enrollments`, `progress`, `certificates`, `site_settings`.
+
+### 2bis. Peupler la base avec des données réelles de lancement
+
+Le compte admin, les formateurs et les premières formations (en dinars algériens) ne sont **pas codés en dur dans le frontend** :
+ils sont créés dans la base de données par un script de seed, que vous pouvez modifier ou ré-exécuter à volonté.
+
+```bash
+cd backend
+npm run seed
+```
+
+Cela crée (ou met à jour si déjà présents) :
+- Un compte **admin** : `admin@futurelearn.dz` / `Admin@2026` *(changez ce mot de passe après la première connexion, depuis `/dashboard/admin/users`)*
+- Deux comptes **formateur** de démonstration
+- Quatre formations réelles avec leurs leçons, en **DZD**
+- Le contenu par défaut de la page d'accueil (modifiable ensuite depuis `/dashboard/admin/settings`)
+
+Tout ce que le script crée est ensuite **entièrement gérable depuis le panneau admin** (modification, suppression, publication/dépublication, ajout de leçons, etc.). Rien n'est figé côté frontend.
 
 ---
 
@@ -115,6 +133,35 @@ npm run dev
 
 ---
 
+## 💰 Devise et paiement
+
+Toute la plateforme fonctionne en **dinar algérien (DZD)** : prix des formations, affichage, chiffre d'affaires dans les statistiques admin, etc.
+
+⚠️ **Important** : l'inscription à une formation (`Enroll`) confirme immédiatement l'accès — il n'y a **pas de passerelle de paiement réelle intégrée** (pas de CIB/Edahabia, pas de Stripe). Le prix affiché est bien réel et vient de la base de données, mais aucun paiement n'est effectivement collecté au clic sur "S'inscrire". Pour un lancement commercial, il faut brancher un vrai prestataire de paiement algérien (SATIM/CIB, Edahabia, ou un agrégateur comme Chargily/Slick-Pay) avant l'ouverture au public, ou gérer les paiements hors-ligne (virement, versement) et activer l'accès manuellement depuis l'admin.
+
+---
+
+## 🚀 Déploiement (hébergement mutualisé + PM2)
+
+```bash
+# Backend
+cd backend
+npm install
+npm run build        # compile dans dist/
+npm run seed          # une seule fois, pour créer l'admin et le contenu initial
+pm2 start dist/main.js --name futurelearn-api
+
+# Frontend
+cd frontend
+npm install
+npm run build
+pm2 start npm --name futurelearn-web -- start
+```
+
+Pensez à configurer `backend/.env` (base de données, `JWT_SECRET`, `FRONTEND_URL`) et `frontend/.env.local` (`NEXT_PUBLIC_API_URL`) avec les vraies valeurs de production avant de démarrer PM2.
+
+---
+
 ## 🩺 Dépannage connexion PostgreSQL
 
 Erreur `ECONNREFUSED` ou `password authentication failed` :
@@ -130,18 +177,23 @@ Erreur `ECONNREFUSED` ou `password authentication failed` :
 
 | Route | Description |
 |-------|-------------|
-| `/` | Landing page |
+| `/` | Landing page (contenu géré depuis l'admin) |
 | `/register` | Création de compte (Student / Instructor) |
 | `/login` | Connexion |
 | `/courses` | Liste des cours |
-| `/courses/[id]` | Détail cours + vidéo player |
+| `/courses/[id]` | Détail cours + inscription + lecteur vidéo |
 | `/dashboard/student` | Tableau de bord étudiant |
 | `/dashboard/student/courses` | Mes cours |
 | `/dashboard/instructor` | Tableau de bord instructeur |
 | `/dashboard/instructor/courses` | Gestion des cours |
 | `/dashboard/instructor/courses/new` | Créer un cours |
-| `/profile` | Profil étudiant complet |
-| `/ai-assistant` | Mentor IA (Anthropic Claude) |
+| `/dashboard/instructor/students` | Étudiants inscrits |
+| `/dashboard/admin` | Tableau de bord admin |
+| `/dashboard/admin/courses` | Gestion de toutes les formations |
+| `/dashboard/admin/users` | Gestion des utilisateurs et rôles |
+| `/dashboard/admin/analytics` | Statistiques réelles de la plateforme |
+| `/dashboard/admin/settings` | Contenu de la page d'accueil (CMS) |
+| `/profile` | Profil (étudiant / instructeur / admin) |
 
 ---
 
@@ -159,9 +211,26 @@ GET  /api/auth/me
 GET    /api/courses
 GET    /api/courses/:id
 GET    /api/courses/my
+GET    /api/courses/admin/all        (admin)
 POST   /api/courses
 PATCH  /api/courses/:id
 DELETE /api/courses/:id
+```
+
+### Users
+```
+GET    /api/users                    (admin, instructor)
+GET    /api/users/stats
+GET    /api/users/admin/overview     (admin — real platform-wide stats)
+PATCH  /api/users/me
+PATCH  /api/users/:id                (admin — change role, etc.)
+DELETE /api/users/:id                (admin)
+```
+
+### Site settings (landing page CMS)
+```
+GET   /api/settings                  (public — hero/features/testimonials + live stats)
+PATCH /api/settings                  (admin)
 ```
 
 ### Enrollments

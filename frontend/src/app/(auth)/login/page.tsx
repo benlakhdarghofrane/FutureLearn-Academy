@@ -35,7 +35,11 @@ export default function LoginPage() {
       const role = res.data.user.role;
       router.push(role === 'instructor' ? '/dashboard/instructor' : '/dashboard/student');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Invalid credentials');
+      if (!err.response) {
+        toast.error('The API server is not reachable. Please start the backend on port 3001 and try again.');
+      } else {
+        toast.error(err.response?.data?.message || 'Invalid credentials');
+      }
     } finally {
       setLoading(false);
     }

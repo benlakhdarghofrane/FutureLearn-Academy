@@ -47,7 +47,7 @@ export function Navbar() {
           {isAuthenticated ? (
             <>
               <Link
-                href={user?.role === 'instructor' ? '/dashboard/instructor' : '/dashboard/student'}
+                href={dashboardHref(user?.role)}
                 className="text-sm text-text-secondary hover:text-white transition-colors"
               >
                 Dashboard
@@ -62,7 +62,7 @@ export function Navbar() {
                 </button>
                 <div className="absolute right-0 top-full mt-1 w-48 bg-card border border-border rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                   <Link href="/profile" className="block px-4 py-2.5 text-sm text-text-secondary hover:text-white hover:bg-surface transition-colors">Profile</Link>
-                  <Link href="/dashboard/student" className="block px-4 py-2.5 text-sm text-text-secondary hover:text-white hover:bg-surface transition-colors">Dashboard</Link>
+                  <Link href={dashboardHref(user?.role)} className="block px-4 py-2.5 text-sm text-text-secondary hover:text-white hover:bg-surface transition-colors">Dashboard</Link>
                   <button onClick={handleLogout} className="block w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-surface transition-colors">Sign Out</button>
                 </div>
               </div>
@@ -85,8 +85,10 @@ export function Navbar() {
 
 const NAV_LINKS = [
   { href: '/courses', label: 'Courses' },
-  { href: '/paths', label: 'Paths' },
-  { href: '/community', label: 'Community' },
-  { href: '/mentors', label: 'Mentors' },
-  { href: '/ai-assistant', label: 'AI Support' },
 ];
+
+function dashboardHref(role?: string) {
+  if (role === 'admin') return '/dashboard/admin';
+  if (role === 'instructor') return '/dashboard/instructor';
+  return '/dashboard/student';
+}

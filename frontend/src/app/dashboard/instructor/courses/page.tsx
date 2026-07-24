@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { DashboardSidebar } from '@/components/layout/DashboardSidebar';
 import { coursesApi } from '@/lib/api';
+import { formatDZD } from '@/lib/currency';
 import { useAuthStore } from '@/lib/store';
 import { toast } from 'sonner';
 import { Plus, Edit2, Trash2, Users, BookOpen, Eye } from 'lucide-react';
@@ -25,7 +26,7 @@ export default function InstructorCoursesPage() {
     },
   });
 
-  const list = courses ?? MOCK_COURSES;
+  const list = courses ?? [];
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -48,6 +49,10 @@ export default function InstructorCoursesPage() {
                 <div key={i} className="card h-20 animate-pulse bg-surface" />
               ))}
             </div>
+          ) : list.length === 0 ? (
+            <div className="card text-center py-16 text-text-muted">
+              Vous n'avez pas encore de formation. <Link href="/dashboard/instructor/courses/new" className="text-primary hover:underline">Créez-en une maintenant</Link>.
+            </div>
           ) : (
             <div className="space-y-3">
               {list.map((course: any) => (
@@ -60,6 +65,7 @@ export default function InstructorCoursesPage() {
                     <div className="flex items-center gap-4 text-xs text-text-muted mt-1">
                       <span className="flex items-center gap-1"><Users size={11} /> {course.enrollments?.length ?? 0} students</span>
                       <span className="flex items-center gap-1"><BookOpen size={11} /> {course.lessons?.length ?? 0} lessons</span>
+                      <span className="text-primary font-medium">{formatDZD(course.price)}</span>
                       <span className={`badge ${course.isPublished !== false ? 'badge-green' : 'bg-border text-text-muted badge'}`}>
                         {course.isPublished !== false ? 'Published' : 'Draft'}
                       </span>
@@ -90,9 +96,3 @@ export default function InstructorCoursesPage() {
     </div>
   );
 }
-
-const MOCK_COURSES = [
-  { id: '1', title: 'Full-Stack Web Development Mastery', enrollments: [1,2,3], lessons: [1,2,3,4,5], isPublished: true },
-  { id: '2', title: 'Advanced React Patterns & Next.js 14', enrollments: [1,2], lessons: [1,2,3], isPublished: true },
-  { id: '3', title: 'System Architecture & Backend Engineering', enrollments: [1], lessons: [1,2], isPublished: false },
-];

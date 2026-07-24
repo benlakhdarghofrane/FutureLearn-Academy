@@ -21,21 +21,21 @@ export class LessonsController {
   @Post()
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  create(@Param('courseId') courseId: string, @Body() body: any) {
-    return this.lessonsService.create({ ...body, courseId });
+  create(@Param('courseId') courseId: string, @Body() body: any, @Request() req) {
+    return this.lessonsService.create({ ...body, courseId }, req.user.userId, req.user.role);
   }
 
   @Patch(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() body: any) {
-    return this.lessonsService.update(id, body);
+  update(@Param('id') id: string, @Body() body: any, @Request() req) {
+    return this.lessonsService.update(id, body, req.user.userId, req.user.role);
   }
 
   @Delete(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.lessonsService.remove(id);
+  remove(@Param('id') id: string, @Request() req) {
+    return this.lessonsService.remove(id, req.user.userId, req.user.role);
   }
 }

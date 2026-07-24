@@ -41,9 +41,9 @@ export default function NewCoursePage() {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      await coursesApi.create({ ...data, tags });
-      toast.success('Course created!');
-      router.push('/dashboard/instructor/courses');
+      const res = await coursesApi.create({ ...data, tags });
+      toast.success('Course created! Add your lessons below.');
+      router.push(`/dashboard/instructor/courses/${res.data.id}/edit`);
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Failed to create course');
     } finally {
@@ -92,7 +92,7 @@ export default function NewCoursePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-text-secondary mb-2 uppercase tracking-wider">Price ($)</label>
+                  <label className="block text-xs font-medium text-text-secondary mb-2 uppercase tracking-wider">Prix (DA)</label>
                   <input {...register('price', { valueAsNumber: true })} type="number" className="input" placeholder="0" />
                 </div>
                 <div>

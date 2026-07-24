@@ -25,7 +25,7 @@ export default function CoursesPage() {
       }).then((r) => r.data),
   });
 
-  const displayCourses = courses ?? MOCK_COURSES;
+  const displayCourses = courses ?? [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,6 +93,10 @@ export default function CoursesPage() {
                 </div>
               ))}
             </div>
+          ) : displayCourses.length === 0 ? (
+            <div className="card text-center py-16 text-text-muted">
+              Aucune formation ne correspond à votre recherche pour le moment.
+            </div>
           ) : (
             <>
               <div className="text-text-muted text-sm mb-4">{displayCourses.length} courses found</div>
@@ -109,12 +113,3 @@ export default function CoursesPage() {
     </div>
   );
 }
-
-const MOCK_COURSES = [
-  { id: '1', title: 'Full-Stack Web Development Mastery', description: 'Engineer robust, scalable applications from database to DOM.', level: 'advanced', durationWeeks: 12, tags: ['React', 'Node.js', 'PostgreSQL'], thumbnail: null, instructor: { fullName: 'Alex Mercer' }, enrollments: [{}, {}, {}] },
-  { id: '2', title: 'Advanced React Patterns & Next.js 14', description: 'Mastering Server Components, streaming, and optimistic UI updates.', level: 'advanced', durationWeeks: 8, tags: ['React', 'Next.js', 'TypeScript'], thumbnail: null, instructor: { fullName: 'Sarah Chen' }, enrollments: [{}, {}] },
-  { id: '3', title: 'System Architecture & Backend Engineering', description: 'Design scalable distributed systems with microservices.', level: 'advanced', durationWeeks: 10, tags: ['NestJS', 'Docker', 'AWS'], thumbnail: null, instructor: { fullName: 'Marcus Lee' }, enrollments: [{}] },
-  { id: '4', title: 'Python for Data Science & ML', description: 'From pandas to PyTorch. Build production ML pipelines.', level: 'intermediate', durationWeeks: 8, tags: ['Python', 'ML', 'PyTorch'], thumbnail: null, instructor: { fullName: 'Diana Park' }, enrollments: [{}, {}, {}, {}] },
-  { id: '5', title: 'TypeScript Mastery', description: 'Advanced TypeScript patterns for large-scale applications.', level: 'intermediate', durationWeeks: 6, tags: ['TypeScript', 'React'], thumbnail: null, instructor: { fullName: 'James Walker' }, enrollments: [{}, {}] },
-  { id: '6', title: 'PostgreSQL & Database Design', description: 'Advanced SQL, query optimization, and schema design.', level: 'intermediate', durationWeeks: 5, tags: ['PostgreSQL', 'SQL'], thumbnail: null, instructor: { fullName: 'Elena Rostova' }, enrollments: [{}] },
-];

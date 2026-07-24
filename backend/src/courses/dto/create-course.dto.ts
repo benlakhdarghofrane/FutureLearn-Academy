@@ -40,4 +40,9 @@ export class CreateCourseDto {
   @IsOptional()
   @IsString()
   previewVideoUrl?: string;
+
+  @ApiProperty({ required: false, description: 'Admin only: assign the course to a specific instructor' })
+  @IsOptional()
+  @IsString()
+  instructorId?: string;
 }

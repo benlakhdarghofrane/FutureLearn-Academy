@@ -11,7 +11,7 @@ export default function StudentCoursesPage() {
     queryFn: () => enrollmentsApi.getMy().then((r) => r.data),
   });
 
-  const list = enrollments ?? MOCK;
+  const list = enrollments ?? [];
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -27,6 +27,10 @@ export default function StudentCoursesPage() {
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="card h-24 animate-pulse bg-surface" />
               ))}
+            </div>
+          ) : list.length === 0 ? (
+            <div className="card text-center py-16 text-text-muted">
+              Vous n'êtes inscrit à aucune formation. <Link href="/courses" className="text-primary hover:underline">Parcourez le catalogue</Link>.
             </div>
           ) : (
             <div className="space-y-4">
@@ -71,9 +75,3 @@ export default function StudentCoursesPage() {
     </div>
   );
 }
-
-const MOCK = [
-  { id: '1', progressPercent: 67, isCompleted: false, course: { id: '1', title: 'Advanced React Patterns & Next.js 14', durationWeeks: 8, tags: ['React', 'Next.js'] } },
-  { id: '2', progressPercent: 23, isCompleted: false, course: { id: '2', title: 'System Architecture & Backend Engineering', durationWeeks: 10, tags: ['NestJS', 'Docker'] } },
-  { id: '3', progressPercent: 100, isCompleted: true, course: { id: '3', title: 'TypeScript Mastery', durationWeeks: 6, tags: ['TypeScript'] } },
-];

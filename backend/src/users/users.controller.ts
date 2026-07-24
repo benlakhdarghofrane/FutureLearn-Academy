@@ -25,6 +25,13 @@ export class UsersController {
     return this.usersService.getStats(req.user.userId);
   }
 
+  @Get('admin/overview')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  getAdminOverview() {
+    return this.usersService.getAdminOverview();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
@@ -32,7 +39,17 @@ export class UsersController {
 
   @Patch('me')
   updateMe(@Request() req, @Body() body: any) {
-    return this.usersService.update(req.user.userId, body);
+    // Never trust the client for privileged fields — role/xp/rank/isActive are
+    // managed by the platform (admin panel, progress engine), not self-editable.
+    const { role, xp, rank, isActive, email, password, id, ...safeFields } = body ?? {};
+    return this.usersService.update(req.user.userId, safeFields);
+  }
+
+  @Patch(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  updateAsAdmin(@Param('id') id: string, @Body() body: any) {
+    return this.usersService.update(id, body);
   }
 
   @Delete(':id')

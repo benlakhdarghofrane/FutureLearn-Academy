@@ -8,6 +8,7 @@ import { LessonsModule } from './lessons/lessons.module';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { ProgressModule } from './progress/progress.module';
 import { CertificatesModule } from './certificates/certificates.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { CertificatesModule } from './certificates/certificates.module';
     EnrollmentsModule,
     ProgressModule,
     CertificatesModule,
+    SettingsModule,
   ],
 })
 export class AppModule {}

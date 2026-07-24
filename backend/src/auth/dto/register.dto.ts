@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, IsOptional, IsEnum } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsOptional, IsIn } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../../users/entities/user.entity';
 
@@ -16,8 +16,10 @@ export class RegisterDto {
   @MinLength(6)
   password: string;
 
-  @ApiProperty({ enum: UserRole, default: UserRole.STUDENT })
+  // Public registration can only ever create a student or instructor account.
+  // Admin accounts are provisioned separately (seed script / promoted by another admin).
+  @ApiProperty({ enum: [UserRole.STUDENT, UserRole.INSTRUCTOR], default: UserRole.STUDENT })
   @IsOptional()
-  @IsEnum(UserRole)
+  @IsIn([UserRole.STUDENT, UserRole.INSTRUCTOR])
   role?: UserRole;
 }

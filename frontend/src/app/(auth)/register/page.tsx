@@ -40,7 +40,11 @@ export default function RegisterPage() {
       toast.success('Welcome to FutureLearn Academy!');
       router.push(data.role === 'instructor' ? '/dashboard/instructor' : '/dashboard/student');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+      if (!err.response) {
+        toast.error('The API server is not reachable. Please start the backend on port 3001 and try again.');
+      } else {
+        toast.error(err.response?.data?.message || 'Registration failed');
+      }
     } finally {
       setLoading(false);
     }

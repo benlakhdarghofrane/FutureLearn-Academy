@@ -32,6 +32,14 @@ export class CoursesController {
     return this.coursesService.findByInstructor(req.user.userId);
   }
 
+  @Get('admin/all')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  getAllForAdmin() {
+    return this.coursesService.findAllForAdmin();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.coursesService.findOne(id);
@@ -42,20 +50,20 @@ export class CoursesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.INSTRUCTOR, UserRole.ADMIN)
   create(@Body() dto: CreateCourseDto, @Request() req) {
-    return this.coursesService.create(dto, req.user.userId);
+    return this.coursesService.create(dto, req.user.userId, req.user.role);
   }
 
   @Patch(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() body: any, @Request() req) {
-    return this.coursesService.update(id, body, req.user.userId);
+    return this.coursesService.update(id, body, req.user.userId, req.user.role);
   }
 
   @Delete(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string, @Request() req) {
-    return this.coursesService.remove(id, req.user.userId);
+    return this.coursesService.remove(id, req.user.userId, req.user.role);
   }
 }

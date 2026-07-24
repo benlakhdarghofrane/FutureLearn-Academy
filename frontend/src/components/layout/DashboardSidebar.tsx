@@ -4,11 +4,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store';
 import {
   LayoutDashboard, BookOpen, Users, Calendar,
-  MessageSquare, Settings, HelpCircle, LogOut, BookMarked,
+  MessageSquare, Settings, LogOut, BookMarked, BarChart3,
 } from 'lucide-react';
 
 interface SidebarProps {
-  role: 'student' | 'instructor';
+  role: 'student' | 'instructor' | 'admin';
 }
 
 export function DashboardSidebar({ role }: SidebarProps) {
@@ -24,8 +24,6 @@ export function DashboardSidebar({ role }: SidebarProps) {
   const studentLinks = [
     { href: '/dashboard/student', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
     { href: '/dashboard/student/courses', icon: <BookOpen size={18} />, label: 'My Courses' },
-    { href: '/dashboard/student/schedule', icon: <Calendar size={18} />, label: 'Schedule' },
-    { href: '/dashboard/student/messages', icon: <MessageSquare size={18} />, label: 'Messages' },
     { href: '/profile', icon: <Settings size={18} />, label: 'Settings' },
   ];
 
@@ -33,11 +31,18 @@ export function DashboardSidebar({ role }: SidebarProps) {
     { href: '/dashboard/instructor', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
     { href: '/dashboard/instructor/courses', icon: <BookOpen size={18} />, label: 'My Courses' },
     { href: '/dashboard/instructor/students', icon: <Users size={18} />, label: 'Students' },
-    { href: '/dashboard/instructor/schedule', icon: <Calendar size={18} />, label: 'Schedule' },
-    { href: '/dashboard/instructor/messages', icon: <MessageSquare size={18} />, label: 'Messages' },
+    { href: '/profile', icon: <Settings size={18} />, label: 'Settings' },
   ];
 
-  const links = role === 'instructor' ? instructorLinks : studentLinks;
+  const adminLinks = [
+    { href: '/dashboard/admin', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
+    { href: '/dashboard/admin/courses', icon: <BookOpen size={18} />, label: 'Courses' },
+    { href: '/dashboard/admin/users', icon: <Users size={18} />, label: 'Users' },
+    { href: '/dashboard/admin/analytics', icon: <BarChart3 size={18} />, label: 'Analytics' },
+    { href: '/dashboard/admin/settings', icon: <Settings size={18} />, label: 'Site Content' },
+  ];
+
+  const links = role === 'instructor' ? instructorLinks : role === 'admin' ? adminLinks : studentLinks;
 
   return (
     <aside className="w-60 min-h-screen bg-surface border-r border-border flex flex-col">
@@ -48,8 +53,8 @@ export function DashboardSidebar({ role }: SidebarProps) {
             <BookMarked size={14} />
           </div>
           <span className="text-sm">
-            {role === 'instructor' ? 'TechnoNoir' : 'FutureLearn'}
-            <span className="block text-xs font-normal text-text-muted capitalize">{role === 'instructor' ? 'Academy' : 'Academy'}</span>
+            FutureLearn
+            <span className="block text-xs font-normal text-text-muted capitalize">Academy</span>
           </span>
         </Link>
       </div>
@@ -70,10 +75,6 @@ export function DashboardSidebar({ role }: SidebarProps) {
 
       {/* User + bottom links */}
       <div className="p-4 border-t border-border space-y-1">
-        <Link href="/ai-assistant" className="sidebar-item">
-          <HelpCircle size={18} />
-          <span className="text-sm">Help Center</span>
-        </Link>
         <button onClick={handleLogout} className="sidebar-item w-full text-red-400 hover:text-red-300 hover:bg-red-500/10">
           <LogOut size={18} />
           <span className="text-sm">Sign Out</span>

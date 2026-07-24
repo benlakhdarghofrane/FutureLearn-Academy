@@ -69,6 +69,13 @@ export class AuthService {
         email: user.email,
         role: user.role,
         avatar: user.avatar,
+        bio: user.bio,
+        title: user.title,
+        xp: user.xp,
+        rank: user.rank,
+        techStack: user.techStack,
+        publicProfileUrl: user.publicProfileUrl,
+        isOnline: user.isOnline,
       },
     };
   }

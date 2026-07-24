@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Clock, Users, ChevronRight } from 'lucide-react';
+import { formatDZD } from '@/lib/currency';
 
 interface Course {
   id: string;
@@ -8,6 +9,7 @@ interface Course {
   level: string;
   durationWeeks: number;
   tags: string[];
+  price?: number | string;
   thumbnail?: string | null;
   instructor: { fullName: string; avatar?: string | null };
   enrollments?: any[];
@@ -57,6 +59,11 @@ export function CourseCard({ course }: { course: Course }) {
             ))}
           </div>
         )}
+
+        {/* Price */}
+        <div className="mb-3">
+          <span className="text-primary font-bold">{formatDZD(course.price)}</span>
+        </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-border">
